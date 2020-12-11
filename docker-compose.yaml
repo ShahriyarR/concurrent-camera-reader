@@ -1,0 +1,25 @@
+version: "3.7"
+
+services:
+  asyncreader:
+    build: .
+    image: asynccamera:1.0
+    environment:
+      - DISPLAY=${DISPLAY}
+      - QT_X11_NO_MITSHM=1
+    volumes:
+    - /dev/video0:/dev/video0 # LOCAL ONLY
+    - /tmp/.X11-unix:/tmp/.X11-unix
+    privileged: true # LOCAL ONLY
+    networks:
+      - wide_network
+      - internal_network
+    command: python /app/dummy.py
+
+networks:
+  internal_network:
+    name: fd_internal_net
+    internal: true
+  wide_network:
+    name: fd_wide_net
+    driver: bridge
