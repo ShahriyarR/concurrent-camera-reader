@@ -1,5 +1,6 @@
 import datetime
 import cv2 as cv
+import asyncio
 
 
 async def add_timestamp_to_frame(frame):
@@ -11,10 +12,10 @@ async def add_timestamp_to_frame(frame):
 
     # put the dt variable over the
     # video frame
-    frame = cv.putText(frame, dt,
+    cv.putText(frame, dt,
                        (10, 100),
                        font, 1,
                        (210, 155, 155),
                        4, cv.LINE_8)
 
-    return frame
+    await asyncio.sleep(0.01)
