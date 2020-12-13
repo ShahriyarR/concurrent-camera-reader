@@ -31,6 +31,7 @@ class MultiCameraCapture:
     async def show_frame(window_name: str, frame: np.array):
         # Just making the OpenCV imshow awaitable in order to be able to run through asyncio
         cv.imshow(window_name, frame)
+        await asyncio.sleep(0.01)
 
     async def async_camera_gen(self):
         for camera_name, capture in self.captures.items():
