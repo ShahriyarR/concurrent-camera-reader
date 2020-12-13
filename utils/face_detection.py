@@ -3,7 +3,7 @@ import os
 import time
 
 
-def run_face_detection(frame):
+async def run_face_detection(frame):
     haar_cascades_path = os.path.dirname(cv.__file__) + "/data/haarcascade_frontalface_default.xml"
     eye_cascade_path = os.path.dirname(cv.__file__) + "/data/haarcascade_eye.xml"
     smile_cascade_path = os.path.dirname(cv.__file__) + "/data/haarcascade_smile.xml"
@@ -29,6 +29,7 @@ def run_face_detection(frame):
         for (sx, sy, sw, sh) in smiles:
             cv.rectangle(roi_color, (sx, sy), ((sx + sw), (sy + sh)), (0, 0, 255), 2)
 
+    # Simulation of some blocking code
     time.sleep(0.5)
 
     return frame
