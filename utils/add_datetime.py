@@ -2,7 +2,7 @@ import datetime
 import cv2 as cv
 
 
-def add_timestamp_to_frame(frame):
+async def add_timestamp_to_frame(frame):
     font = cv.FONT_HERSHEY_SCRIPT_COMPLEX
 
     # Get date and time and
