@@ -1,6 +1,7 @@
 import cv2 as cv
 import json
 import asyncio
+import uvloop
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 from functools import partial
 from async_frame_reader.video_async import MultiCameraCapture
@@ -50,4 +51,5 @@ if __name__ == "__main__":
     cameras = json.loads(open('cameras.json').read())
     captured = MultiCameraCapture(sources=cameras)
     # executor = ProcessPoolExecutor(max_workers=2)
+    uvloop.install()
     asyncio.run(main(captured_obj=captured))
