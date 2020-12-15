@@ -17,6 +17,7 @@ async def run_fd_time(frame):
 
 
 async def run_blocking_func(loop, frame):
+    # TODO: Show ThreadPoolExecutor
     with ProcessPoolExecutor() as pool:
         blocking_func = partial(run_face_detection, frame)
         frame = await loop.run_in_executor(pool, blocking_func)
@@ -32,6 +33,8 @@ async def main(captured_obj):
             await run_fd_time(frame)
             await asyncio.wait([captured_obj.show_frame(camera_name, frame), run_blocking_func(loop, frame)],
                                return_when=asyncio.FIRST_COMPLETED)
+            # TODO: Show this with both ThreadPoolExecutor and ProcessPoolExecutor
+            # await asyncio.gather(captured_obj.show_frame(camera_name, frame), run_blocking_func(loop, frame))
             if cv.waitKey(1) == 27:
                 break
 
