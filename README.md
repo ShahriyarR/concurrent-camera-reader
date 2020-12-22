@@ -1,11 +1,12 @@
 # Concurrent Camera Reader tutorial project repo
 
 The repo for Youtube tutorial series about using Python asyncio with OpenCV to grab frames 
-from multiple video cameras concurrently.
-The primary focus of tutorials are - solving real-world concurrent programming problem using Python asyncio - so if you want to learn asyncio, you are in a right place dude))
+from multiple video cameras concurrently and show without lagging.
 
-Please see the Youtube Playlist of this repo:
-https://www.youtube.com/watch?v=4CDxDHt919o&list=PL0xSLrZOcI4t-ABy2BGc12YT1Hmm8f9iD
+The primary focus of tutorials are - solving real-world concurrent programming problem using Python asyncio - so if you want to learn Python asyncio, you are in a right place...
 
-You can also go further and learn Golang vs. Python asyncio:
-https://www.youtube.com/watch?v=2I3f5G7ZPa4&list=PL0xSLrZOcI4uKzRrI9C5VTJEBs8eULNhA
+* Please see the Youtube Playlist of this repo:
+[Learning Python asyncio with OpenCV](https://www.youtube.com/watch?v=4CDxDHt919o&list=PL0xSLrZOcI4t-ABy2BGc12YT1Hmm8f9iD)
+
+* You can also go further and learn Golang vs. Python asyncio:
+[Concurrent Programming - Golang vs. Python asyncio](https://www.youtube.com/watch?v=2I3f5G7ZPa4&list=PL0xSLrZOcI4uKzRrI9C5VTJEBs8eULNhA)
