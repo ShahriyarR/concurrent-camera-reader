@@ -2,5 +2,10 @@
 
 The repo for Youtube tutorial series about using Python asyncio with OpenCV to grab frames 
 from multiple video cameras concurrently.
+The primary focus of tutorials are - solving real-world concurrent programming problem using Python asyncio - so if you want to learn asyncio, you are in a right place dude))
 
-The Youtube playlist link will be added here ...
+Please see the Youtube Playlist of this repo:
+https://www.youtube.com/watch?v=4CDxDHt919o&list=PL0xSLrZOcI4t-ABy2BGc12YT1Hmm8f9iD
+
+You can also go further and learn Golang vs. Python asyncio:
+https://www.youtube.com/watch?v=2I3f5G7ZPa4&list=PL0xSLrZOcI4uKzRrI9C5VTJEBs8eULNhA
