@@ -21,7 +21,7 @@ async def run_blocking_func(loop_, frame):
     # TODO: Show ThreadPoolExecutor
     with ProcessPoolExecutor() as pool:
         blocking_func = partial(run_face_detection, frame)
-        frame = await loop.run_in_executor(pool, blocking_func)
+        frame = await loop_.run_in_executor(pool, blocking_func)
         await asyncio.sleep(0.01)
     return frame
 
