@@ -12,13 +12,13 @@ def run_face_detection(frame):
     eye_cascade = cv.CascadeClassifier(eye_cascade_path)
     smile_cascade = cv.CascadeClassifier(smile_cascade_path)
 
-    gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
+    gray = cv.cvtColor(frame[1], cv.COLOR_BGR2GRAY)
     faces = face_cascade.detectMultiScale(gray, 1.3, 5)
     for (x, y, w, h) in faces:
         print("Face is detected")
-        frame = cv.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
+        frame = cv.rectangle(frame[1], (x, y), (x + w, y + h), (255, 0, 0), 2)
         roi_gray = gray[y:y + h, x:x + w]
-        roi_color = frame[y:y + h, x:x + w]
+        roi_color = frame[1][y:y + h, x:x + w]
 
         eyes = eye_cascade.detectMultiScale(roi_gray)
         for (ex, ey, ew, eh) in eyes:

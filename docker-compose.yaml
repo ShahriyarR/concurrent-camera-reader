@@ -15,7 +15,7 @@ services:
     networks:
       - wide_network
       - internal_network
-    command: python /app/dummy.py
+    command: python /app/main.py
 
 networks:
   internal_network:
