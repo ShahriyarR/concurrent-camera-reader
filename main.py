@@ -10,33 +10,59 @@ from utils.face_detection import run_face_detection
 from utils.add_datetime import add_timestamp_to_frame
 
 
-async def run_fd_time(frame):
+async def run_fd_time(queue_, frame):
     # Show 2nd attempt then
     task1 = asyncio.create_task(add_timestamp_to_frame(frame))
-    await task1
+    queue_.put(await task1)
     await asyncio.sleep(0.01)
 
 
-async def run_blocking_func(loop_, frame):
-    # TODO: Show ThreadPoolExecutor
+async def run_blocking_func(loop_, queue_):
     with ProcessPoolExecutor() as pool:
+        frame = await queue_.get()
         blocking_func = partial(run_face_detection, frame)
         frame = await loop_.run_in_executor(pool, blocking_func)
+        await queue_.put(frame)
         await asyncio.sleep(0.01)
-    return frame
 
 
-async def main(loop_, captured_obj):
+async def produce(queue_, captured_obj):
     while True:
-        async for camera_name, cap in captured.async_camera_gen():
+        async for camera_name, cap in captured_obj.async_camera_gen():
+            # Read the frame and put it into the Queue
             frame = await asyncio.create_task(captured_obj.read_frame(cap), name="frame_reader")
-            await asyncio.create_task(run_fd_time(frame), name="add_timestamp")
+            await queue_.put((camera_name, frame))
 
-            task1 = asyncio.create_task(captured_obj.show_frame(camera_name, frame), name="show_frame")
-            task2 = asyncio.create_task(run_blocking_func(loop_, frame))
+        # To indicate that producer is done
+        await asyncio.sleep(0.01)
+
+
+async def consume(loop_, queue_, captured_obj):
+    while True:
+        # If there is something in Queue
+        if queue_.qsize():
+            # Read it from queue
+            frame = await queue_.get()
+            # Add timestamp and put back the frame
+            await asyncio.create_task(run_fd_time(queue_, frame), name="add_timestamp")
+            # Show the frame
+            task1 = asyncio.create_task(captured_obj.show_frame(queue_), name="show_frame")
+
+            # Apply Face detection
+            task2 = asyncio.create_task(run_blocking_func(loop_, queue_))
+
             await asyncio.wait([task1, task2], return_when=asyncio.FIRST_COMPLETED)
             if cv.waitKey(1) == 27:
                 break
+        else:
+            # To indicate that queue is empty
+            await asyncio.sleep(0.01)
+
+
+async def run(loop_, queue_, captured_obj):
+    producer_task = asyncio.create_task(produce(queue_, captured_obj), name="producer-task")
+    consumer_task = asyncio.create_task(consume(loop_, queue_, captured_obj), name="consumer-task")
+    await asyncio.gather(producer_task, consumer_task)
 
 
 async def shutdown_(signal_, loop_):
@@ -58,6 +84,7 @@ if __name__ == "__main__":
 
     uvloop.install()
     loop = asyncio.get_event_loop()
+    queue = asyncio.LifoQueue(maxsize=10)
 
     # Signal handler
     signals = (signal.SIGHUP, signal.SIGTERM, signal.SIGINT)
@@ -66,7 +93,7 @@ if __name__ == "__main__":
             s, lambda f=s: asyncio.create_task(shutdown_(s, loop)))
 
     try:
-        loop.run_until_complete(main(loop_=loop, captured_obj=captured))
+        loop.run_until_complete(run(loop_=loop, queue_=queue, captured_obj=captured))
     # except KeyboardInterrupt:
     #     loop.run_until_complete(asyncio.ensure_future(shutdown_(loop)))
     finally:
