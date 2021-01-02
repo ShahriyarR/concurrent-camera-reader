@@ -13,8 +13,8 @@ from utils.add_datetime import add_timestamp_to_frame
 async def run_fd_time(queue_, frame):
     # Show 2nd attempt then
     task1 = asyncio.create_task(add_timestamp_to_frame(frame))
-    queue_.put(await task1)
-    await asyncio.sleep(0.01)
+    await queue_.put(await task1)
+    # await asyncio.sleep(0.01)
 
 
 async def run_blocking_func(loop_, queue_):
@@ -22,8 +22,9 @@ async def run_blocking_func(loop_, queue_):
         frame = await queue_.get()
         blocking_func = partial(run_face_detection, frame)
         frame = await loop_.run_in_executor(pool, blocking_func)
+        frame[-1] = True
         await queue_.put(frame)
-        await asyncio.sleep(0.01)
+        # await asyncio.sleep(0.01)
 
 
 async def produce(queue_, captured_obj):
@@ -31,7 +32,9 @@ async def produce(queue_, captured_obj):
         async for camera_name, cap in captured_obj.async_camera_gen():
             # Read the frame and put it into the Queue
             frame = await asyncio.create_task(captured_obj.read_frame(cap), name="frame_reader")
-            await queue_.put((camera_name, frame))
+            print("inside producer")
+            await queue_.put([camera_name, frame, None])
+            # await asyncio.sleep(0.01)
 
         # To indicate that producer is done
         await asyncio.sleep(0.01)
@@ -43,17 +46,19 @@ async def consume(loop_, queue_, captured_obj):
         if queue_.qsize():
             # Read it from queue
             frame = await queue_.get()
+            print("inside consumer")
             # Add timestamp and put back the frame
-            await asyncio.create_task(run_fd_time(queue_, frame), name="add_timestamp")
+            await run_fd_time(queue_, frame)
             # Show the frame
             task1 = asyncio.create_task(captured_obj.show_frame(queue_), name="show_frame")
+            await task1
+            # # Apply Face detection
+            # task2 = asyncio.create_task(run_blocking_func(loop_, queue_))
 
-            # Apply Face detection
-            task2 = asyncio.create_task(run_blocking_func(loop_, queue_))
-
-            await asyncio.wait([task1, task2], return_when=asyncio.FIRST_COMPLETED)
+            # await asyncio.wait([task1, task2], return_when=asyncio.FIRST_COMPLETED)
             if cv.waitKey(1) == 27:
                 break
+            # await asyncio.sleep(0.01)
         else:
             # To indicate that queue is empty
             await asyncio.sleep(0.01)
@@ -84,7 +89,7 @@ if __name__ == "__main__":
 
     uvloop.install()
     loop = asyncio.get_event_loop()
-    queue = asyncio.LifoQueue(maxsize=10)
+    queue = asyncio.LifoQueue(maxsize=4)
 
     # Signal handler
     signals = (signal.SIGHUP, signal.SIGTERM, signal.SIGINT)
