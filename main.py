@@ -29,12 +29,13 @@ async def run_blocking_func(loop_, queue_):
 
 async def produce(queue_, captured_obj):
     while True:
+        print("From Producer -> ", queue_.qsize())
         async for camera_name, cap in captured_obj.async_camera_gen():
             # Read the frame and put it into the Queue
             frame = await asyncio.create_task(captured_obj.read_frame(cap), name="frame_reader")
             print("inside producer")
             await queue_.put([camera_name, frame, None])
-            # await asyncio.sleep(0.01)
+            await asyncio.sleep(0.01)
 
         # To indicate that producer is done
         await asyncio.sleep(0.01)
@@ -42,6 +43,7 @@ async def produce(queue_, captured_obj):
 
 async def consume(loop_, queue_, captured_obj):
     while True:
+        print("From Consumer -> ", queue_.qsize())
         # If there is something in Queue
         if queue_.qsize():
             # Read it from queue
@@ -49,9 +51,10 @@ async def consume(loop_, queue_, captured_obj):
             print("inside consumer")
             # Add timestamp and put back the frame
             await run_fd_time(queue_, frame)
-            # Show the frame
+            # # Show the frame
             task1 = asyncio.create_task(captured_obj.show_frame(queue_), name="show_frame")
             await task1
+
             # # Apply Face detection
             # task2 = asyncio.create_task(run_blocking_func(loop_, queue_))
 
@@ -67,7 +70,7 @@ async def consume(loop_, queue_, captured_obj):
 async def run(loop_, queue_, captured_obj):
     producer_task = asyncio.create_task(produce(queue_, captured_obj), name="producer-task")
     consumer_task = asyncio.create_task(consume(loop_, queue_, captured_obj), name="consumer-task")
-    await asyncio.gather(producer_task, consumer_task)
+    await asyncio.gather(producer_task, consumer_task, return_exceptions=True)
 
 
 async def shutdown_(signal_, loop_):
@@ -89,7 +92,7 @@ if __name__ == "__main__":
 
     uvloop.install()
     loop = asyncio.get_event_loop()
-    queue = asyncio.LifoQueue(maxsize=4)
+    queue = asyncio.LifoQueue(maxsize=100)
 
     # Signal handler
     signals = (signal.SIGHUP, signal.SIGTERM, signal.SIGINT)
