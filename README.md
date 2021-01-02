@@ -9,4 +9,4 @@ The primary focus of tutorials are - solving real-world concurrent programming p
 [Learning Python asyncio with OpenCV](https://www.youtube.com/watch?v=4CDxDHt919o&list=PL0xSLrZOcI4t-ABy2BGc12YT1Hmm8f9iD)
 
 * You can also go further and learn Golang vs. Python asyncio:
-[Concurrent Programming - Golang vs. Python asyncio](https://www.youtube.com/watch?v=2I3f5G7ZPa4&list=PL0xSLrZOcI4uKzRrI9C5VTJEBs8eULNhA)
+[Concurrent Programming - Golang vs. Python asyncio](https://www.youtube.com/watch?v=1Ps2zPR90rk&list=PL0xSLrZOcI4uo5QJN5sWfoYQJZ-00Jcy9)
