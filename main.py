@@ -89,7 +89,7 @@ if __name__ == "__main__":
 
     uvloop.install()
     loop = asyncio.get_event_loop()
-    queue = asyncio.LifoQueue(maxsize=4)
+    queue = asyncio.LifoQueue(maxsize=100)
 
     # Signal handler
     signals = (signal.SIGHUP, signal.SIGTERM, signal.SIGINT)
