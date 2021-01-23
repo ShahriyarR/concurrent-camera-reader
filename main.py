@@ -23,7 +23,8 @@ async def run_blocking_func(loop_, queue_):
         blocking_func = partial(run_face_detection, frame)
         frame = await loop_.run_in_executor(pool, blocking_func)
         frame[-1] = True
-        await queue_.put(frame)
+        queue_.put_nowait(frame)
+        print("From blocking func -> ", queue_.qsize())
         await asyncio.sleep(0.01)
 
 
@@ -51,27 +52,32 @@ async def consume(loop_, queue_, captured_obj):
             print("inside consumer")
             # Add timestamp and put back the frame
             await run_fd_time(queue_, frame)
-            # # Show the frame
-            task1 = asyncio.create_task(captured_obj.show_frame(queue_), name="show_frame")
-            # await task1
 
             # Apply Face detection
             task2 = asyncio.create_task(run_blocking_func(loop_, queue_))
-            # await task2
-
-            await asyncio.wait([task1, task2], return_when=asyncio.FIRST_COMPLETED)
-            if cv.waitKey(1) == 27:
-                break
-            # await asyncio.sleep(0.01)
+            await task2
+            await asyncio.sleep(0.01)
         else:
             # To indicate that queue is empty
+            await asyncio.sleep(0.01)
+
+
+async def consume_secondary(queue_, captured_obj):
+    while True:
+        if queue_.qsize():
+            task1 = asyncio.create_task(captured_obj.show_frame(queue_), name="show_frame")
+            await task1
+            if cv.waitKey(1) == 27:
+                break
+        else:
             await asyncio.sleep(0.01)
 
 
 async def run(loop_, queue_, captured_obj):
     producer_task = asyncio.create_task(produce(queue_, captured_obj), name="producer-task")
     consumer_task = asyncio.create_task(consume(loop_, queue_, captured_obj), name="consumer-task")
-    await asyncio.gather(producer_task, consumer_task, return_exceptions=True)
+    consumer_secondary_task = asyncio.create_task(consume_secondary(queue_, captured_obj))
+    await asyncio.gather(producer_task, consumer_secondary_task, consumer_task,  return_exceptions=True)
 
 
 async def shutdown_(signal_, loop_):
