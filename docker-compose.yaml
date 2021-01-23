@@ -11,6 +11,7 @@ services:
     - /dev/video0:/dev/video0 # LOCAL ONLY
     - /dev/video2:/dev/video2 # LOCAL ONLY
     - /tmp/.X11-unix:/tmp/.X11-unix
+
     privileged: true # LOCAL ONLY
     networks:
       - wide_network

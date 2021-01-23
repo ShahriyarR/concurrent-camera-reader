@@ -24,7 +24,7 @@ async def run_blocking_func(loop_, queue_):
         frame = await loop_.run_in_executor(pool, blocking_func)
         frame[-1] = True
         await queue_.put(frame)
-        # await asyncio.sleep(0.01)
+        await asyncio.sleep(0.01)
 
 
 async def produce(queue_, captured_obj):
@@ -53,12 +53,13 @@ async def consume(loop_, queue_, captured_obj):
             await run_fd_time(queue_, frame)
             # # Show the frame
             task1 = asyncio.create_task(captured_obj.show_frame(queue_), name="show_frame")
-            await task1
+            # await task1
 
-            # # Apply Face detection
-            # task2 = asyncio.create_task(run_blocking_func(loop_, queue_))
+            # Apply Face detection
+            task2 = asyncio.create_task(run_blocking_func(loop_, queue_))
+            # await task2
 
-            # await asyncio.wait([task1, task2], return_when=asyncio.FIRST_COMPLETED)
+            await asyncio.wait([task1, task2], return_when=asyncio.FIRST_COMPLETED)
             if cv.waitKey(1) == 27:
                 break
             # await asyncio.sleep(0.01)
