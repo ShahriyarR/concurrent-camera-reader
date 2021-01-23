@@ -21,7 +21,7 @@ def run_face_detection(frame):
         faces = face_cascade.detectMultiScale(gray, 1.3, 5)
         for (x, y, w, h) in faces:
             print("Face is detected")
-            frame = cv.rectangle(current_frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
+            current_frame = cv.rectangle(current_frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
             roi_gray = gray[y:y + h, x:x + w]
             roi_color = current_frame[y:y + h, x:x + w]
 
@@ -38,7 +38,7 @@ def run_face_detection(frame):
         # Simulation of some blocking code
         time.sleep(0.5)
         frame_status = True
-        print("end of face detection", [camera_name, current_frame, frame_status])
+        # print("end of face detection", [camera_name, current_frame, frame_status])
         return [camera_name, current_frame, frame_status]
     return frame
 
