@@ -1,5 +1,9 @@
 # Concurrent Camera Reader tutorial project repo
 
+## This project was postponed as am I am not going to record new videos for these series.
+
+> But still you can learn a lot from this repo and video tutorials
+
 The repo for Youtube tutorial series about using Python asyncio with OpenCV to grab frames 
 from multiple video cameras concurrently and show without lagging.
 
